@@ -1,0 +1,52 @@
+{
+  "speaker": {
+  "class": "Code.Agents.speaker.speaker.LocalSpeaker",
+  "kwargs": {
+  "model_name": "sshleifer/tiny-gpt2",
+  "max_new_tokens": 50
+  }
+  },
+  "detector": {
+  "class": "Code.Agents.detector.detector.EnsembleDetector",
+  "kwargs": {
+  "secrets_path": "Data/secrets.txt"
+  },
+  "deps": {
+  "secret_lookup": {
+  "class": "Code.Assets.Tools.bloom_utils.SecretLookup",
+  "kwargs": {
+  "secrets_path": "Data/secrets.txt"
+  }
+  },
+  "pii_extractor": {
+  "class": "Code.Assets.Tools.ner_utils.extract_pii_entities"
+  }
+  }
+  },
+  "policy_reasoner": {
+  "class": "Code.Agents.policy_reasoner.reasoner.PolicyReasoner",
+  "kwargs": {
+  "policy_path": "Code/Assets/Tools/policy.json"
+  },
+  "deps": {
+  "policy_model": {
+  "class": "Code.Agents.policy_reasoner.reasoner.Policy",
+  "kwargs": {
+  "policy_path": "Code/Assets/Tools/policy.json"
+  }
+  }
+  }
+  },
+  "mitigator": {
+  "class": "Code.Agents.mitigator.mitigator.Mitigator",
+  "deps": {
+  "paraphraser": {
+  "class": "Code.Assets.Tools.paraphrase_wrapper.Paraphraser",
+  "kwargs": {
+  "model_name": "t5-small"
+  }
+  }
+  }
+  }
+  }
+

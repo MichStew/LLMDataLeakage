@@ -4,18 +4,17 @@ from __future__ import annotations
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from Code.Agents.speaker import LocalSpeaker
-from Code.Agents.detector import EnsembleDetector
-from Code.Agents.policy_reasoner import PolicyReasoner
-from Code.Agents.mitigator import Mitigator
+from Code.Agents.registry import get_agent_registry
 from Code.Assets.Tools.audit_logger import AuditLogger
 
 app = FastAPI(title="Agentic Output Sanitizer")
 
-speaker = LocalSpeaker()
-detector = EnsembleDetector()
-reasoner = PolicyReasoner()
-mitigator = Mitigator()
+REGISTRY = get_agent_registry()
+
+speaker = REGISTRY.instantiate("speaker")
+detector = REGISTRY.instantiate("detector")
+reasoner = REGISTRY.instantiate("policy_reasoner")
+mitigator = REGISTRY.instantiate("mitigator")
 audit_logger = AuditLogger()
 
 

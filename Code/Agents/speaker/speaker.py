@@ -32,14 +32,26 @@ class LocalSpeaker:
         self._model = None
         self._tokenizer = None
         self._dummy_mode = True
+        self._device = None
         if AutoModelForCausalLM and AutoTokenizer:
             try:
                 self._tokenizer = AutoTokenizer.from_pretrained(model_name)
                 self._model = AutoModelForCausalLM.from_pretrained(model_name)
+                if self._tokenizer.pad_token_id is None:
+                    # GPT-style models often lack a pad token; reuse EOS to silence warnings.
+                    self._tokenizer.pad_token = self._tokenizer.eos_token
+                if self._model is not None and hasattr(self._model, "config"):
+                    self._model.config.pad_token_id = self._tokenizer.pad_token_id  # type: ignore[assignment]
                 if torch is not None:
+                    self._device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+                    self._model.to(self._device)
                     self._model.eval()
+                    LOGGER.info("Loaded HuggingFace model %s on %s", model_name, self._device)
+                else:
+                    LOGGER.warning("torch module unavailable; speaker will run in dummy mode")
+                    self._dummy_mode = True
+                    return
                 self._dummy_mode = False
-                LOGGER.info("Loaded HuggingFace model %s", model_name)
             except Exception as exc:  # pragma: no cover - handled gracefully
                 LOGGER.warning("Falling back to dummy speaker due to: %s", exc)
                 self._dummy_mode = True
@@ -78,12 +90,20 @@ class LocalSpeaker:
         }
         kwargs.update(generation_kwargs)
 
-        input_ids = self._tokenizer(prompt, return_tensors="pt").input_ids
-        if torch is not None:
-            input_ids = input_ids.to(self._model.device)
+        encoded = self._tokenizer(prompt, return_tensors="pt", padding=True)
+        input_ids = encoded["input_ids"]
+        attention_mask = encoded.get("attention_mask")
+        if torch is not None and self._device is not None:
+            input_ids = input_ids.to(self._device)
+            if attention_mask is not None:
+                attention_mask = attention_mask.to(self._device)
+
+        generate_kwargs = dict(kwargs)
+        if attention_mask is not None:
+            generate_kwargs["attention_mask"] = attention_mask
 
         with torch.no_grad():  # type: ignore[attr-defined]
-            outputs = self._model.generate(input_ids, **kwargs)
+            outputs = self._model.generate(input_ids, **generate_kwargs)
 
         sequence = outputs.sequences[0]
         generated_ids = sequence[input_ids.shape[-1] :]

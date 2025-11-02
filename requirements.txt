@@ -4,3 +4,4 @@ httpx>=0.24
 pybloom-live>=4.0.0
 spacy>=3.5.0; extra == "full"
 transformers>=4.30.0; extra == "full"
+datasets>=2.16.0

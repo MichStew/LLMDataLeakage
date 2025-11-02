@@ -15,7 +15,9 @@ class EnsembleDetector:
     """Combine multiple detectors to flag sensitive content."""
 
     def __init__(self, secrets_path: Optional[Path] = None) -> None:
-        data_dir = Path(__file__).resolve().parents[2] / "Data"
+        # Detector module lives under Code/Agents/detector/, so parents[3]
+        # takes us back to the repository root before joining Data/.
+        data_dir = Path(__file__).resolve().parents[3] / "Data"
         default_path = data_dir / "secrets.txt"
         self.lookup = SecretLookup(secrets_path or default_path)
 

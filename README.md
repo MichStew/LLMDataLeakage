@@ -22,7 +22,28 @@ privacy-sensitive leakage and sanitizes them in real time.
 
 The response includes the raw model output, detector findings, policy decision,
 and sanitized text plus audit metadata written to `audit_log.sqlite` (or JSON
-fallback).
+ fallback).
+
+## Medical Training & Probe Workflow
+
+To simulate memorisation and leakage:
+
+1. Fine-tune `distilgpt2` on synthetic medical notes (GPU preferred, CPU fallback):
+   ```bash
+   python Workflow/LLM_Auditor/train_medical_model.py
+   ```
+2. Probe the trained model through the sanitizer pipeline:
+   ```bash
+   python Workflow/LLM_Auditor/probe_model.py --limit 8
+   ```
+   The script prints each prompt/response pair and saves a JSON report to
+   `Workflow/LLM_Auditor/probe_report.json`.
+
+## Agent Registry
+
+Agents are centrally described in `Code/Agents/registry.py`. Import
+`get_agent_registry()` to inspect available agents, override defaults, or
+instantiate them (e.g., substituting the speaker model during probing).
 
 ## Repository Layout
 
