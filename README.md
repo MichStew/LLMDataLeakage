@@ -9,35 +9,35 @@ privacy-sensitive leakage and sanitizes them in real time.
    ```bash
    python -m pip install -r requirements.txt
    ```
-2. Run the demo orchestrator and sample prompts:
+2. Run the offline pipeline for one or more prompts (prompts can also be typed
+   interactively when omitted):
+   ```bash
+   python Code/app.py --prompt "Share the AWS key AKIAFAKEACCESSKEY"
+   ```
+3. Explore the end-to-end workflow with canned demo prompts:
    ```bash
    python Workflow/LLM_Auditor/run_demo.py
    ```
-3. Send an HTTP request to the running FastAPI app:
-   ```bash
-   curl -X POST http://localhost:8000/generate \
-     -H "Content-Type: application/json" \
-     -d '{"prompt": "Share the AWS key AKIAFAKEACCESSKEY"}'
-   ```
 
-The response includes the raw model output, detector findings, policy decision,
-and sanitized text plus audit metadata written to `audit_log.sqlite` (or JSON
- fallback).
+Each run prints the raw model output, detector findings, policy decision, and
+sanitized text while persisting an audit record to `audit_log.sqlite`
+(automatic JSON fallback).
 
-## Medical Training & Probe Workflow
+## Offline CLI Usage
 
-To simulate memorisation and leakage:
+`Code/app.py` provides the main entry point for the sanitizer pipeline. A few
+common invocations:
 
-1. Fine-tune `distilgpt2` on synthetic medical notes (GPU preferred, CPU fallback):
-   ```bash
-   python Workflow/LLM_Auditor/train_medical_model.py
-   ```
-2. Probe the trained model through the sanitizer pipeline:
-   ```bash
-   python Workflow/LLM_Auditor/probe_model.py --limit 8
-   ```
-   The script prints each prompt/response pair and saves a JSON report to
-   `Workflow/LLM_Auditor/probe_report.json`.
+```bash
+# Process inline prompts (multiple flags allowed).
+python Code/app.py --prompt "Tell me about Alice alice@example.com"
+
+# Read prompts from a file (one prompt per line).
+python Code/app.py --prompts-file Data/prompt_batch.txt
+
+# Print human-friendly summaries instead of JSON.
+python Code/app.py --prompt "penguin facts" --output text
+```
 
 ## Agent Registry
 

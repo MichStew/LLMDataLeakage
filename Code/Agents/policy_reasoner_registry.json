@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "registry_type": "agent_registry",
+    "compatible_protocols": ["a2a", "mcp"],
+    "description": "PolicyReasoner agent specification describing how detector signals map to mitigation actions."
+  },
+  "global_protocols": ["a2a", "mcp"],
+  "agents": [
+    {
+      "id": "policy_reasoner",
+      "name": "PolicyReasoner",
+      "description": "Scores detector outputs using configured weights and thresholds to choose actions such as PASS, PARAPHRASE, REDACT, REFUSE, or ESCALATE.",
+      "capabilities": ["policy_weighting", "risk_scoring", "mitigation_decision"],
+      "input_data_streams": {
+        "mandatory": ["detection"],
+        "optional": ["policy_override"]
+      },
+      "output_data_streams": {
+        "mandatory": ["action", "score"],
+        "optional": ["rationale"]
+      }
+    }
+  ]
+}

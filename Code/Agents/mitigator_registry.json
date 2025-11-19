@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "registry_type": "agent_registry",
+    "compatible_protocols": ["a2a", "mcp"],
+    "description": "Mitigator agent specification for applying sanitization actions on model outputs."
+  },
+  "global_protocols": ["a2a", "mcp"],
+  "agents": [
+    {
+      "id": "mitigator",
+      "name": "Mitigator",
+      "description": "Executes policy-selected actions such as passthrough, refusal, escalation, paraphrasing, or targeted redaction using detector context.",
+      "capabilities": ["sanitize_text", "policy_action_execution", "paraphrase_and_redact"],
+      "input_data_streams": {
+        "mandatory": ["text", "action", "detection"],
+        "optional": []
+      },
+      "output_data_streams": {
+        "mandatory": ["sanitized_text"],
+        "optional": ["details"]
+      }
+    }
+  ]
+}

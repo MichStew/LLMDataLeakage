@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "registry_type": "agent_registry",
+    "compatible_protocols": ["a2a", "mcp"],
+    "description": "LocalSpeaker agent specification for the Agentic Output Sanitizer pipeline."
+  },
+  "global_protocols": ["a2a", "mcp"],
+  "agents": [
+    {
+      "id": "speaker",
+      "name": "LocalSpeaker",
+      "description": "Generates raw candidate text from prompts using a lightweight local language model with dummy fallbacks.",
+      "capabilities": ["text_generation", "token_logprobs", "model_metadata"],
+      "input_data_streams": {
+        "mandatory": ["prompt"],
+        "optional": ["generation_kwargs"]
+      },
+      "output_data_streams": {
+        "mandatory": ["text", "logprobs"],
+        "optional": ["meta"]
+      }
+    }
+  ]
+}

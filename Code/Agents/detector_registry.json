@@ -1,0 +1,25 @@
+{
+  "metadata": {
+    "version": "1.0.0",
+    "registry_type": "agent_registry",
+    "compatible_protocols": ["a2a", "mcp"],
+    "description": "EnsembleDetector agent specification covering exact-match lookups, regex PII heuristics, and exposure scoring."
+  },
+  "global_protocols": ["a2a", "mcp"],
+  "agents": [
+    {
+      "id": "detector",
+      "name": "EnsembleDetector",
+      "description": "Analyzes generated text for sensitive information by combining Bloom-filter secret checks, regex-based PII extraction, and generation metadata heuristics.",
+      "capabilities": ["exact_secret_detection", "pii_entity_recognition", "exposure_risk_estimation"],
+      "input_data_streams": {
+        "mandatory": ["text"],
+        "optional": ["generation_meta"]
+      },
+      "output_data_streams": {
+        "mandatory": ["exact_matches", "pii_entities", "exposure_score"],
+        "optional": []
+      }
+    }
+  ]
+}
